@@ -1,6 +1,15 @@
-### Overview
+## Overview
 
-### How to run
+## Installation
+
+To install the workflow along with its submodules, simply run the following command in your directory of choice:
+	```
+	git clone --recursive https://github.com/nrminor/iWES-genotyper.git .
+	```
+
+The `--recursive` flag is necessary to pull the git submodule [serpent](https://github.com/DABAKER165/chtc_serpent_v2) along with the rest of the repo.
+
+## How to run
 
 The CHTC serpent workflow manager, developed by [David A. Baker](https://github.com/DABAKER165), allows extremely precise, case-specific configuration with JSON files. In this repo, these config files are located in `iwes_genotyping/config`.
 
