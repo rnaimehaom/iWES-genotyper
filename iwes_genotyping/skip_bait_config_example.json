@@ -1,12 +1,12 @@
 {
   "all": {
     "local": {
-      "default_config_dir": "/Volumes/working_ssd/27399/27400/iwes_genotyping/config"
+      "default_config_dir": "/Users/dabaker3/github/iwes_genotyping/config"
     }
   },
   "iwes": {
     "chtc": {
-      "transfer_to_server": "/Volumes/Data-pathfs09/sequencing/Baylor/Baylor_31/fastq"
+      "transfer_to_server": "/Volumes/T7/MHC_genotyper/baylor31/input"
     }
   },
   "tar_paired_fastq": {
@@ -17,7 +17,7 @@
   "aggregate_haplotype": {
     "local": {
       "arguments": {
-        "--animal_lookup_path": "/Volumes/working_ssd/27399/27400/iwes_genotyping/static_files/animal_lookup_baylor31.csv"
+        "--animal_lookup_path": "/Users/dabaker3/github/iwes_genotyping/static_files/animal_lookup_baylor31.csv"
       }
     }
   }

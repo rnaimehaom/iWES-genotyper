@@ -5,6 +5,7 @@
       "ram": "24GB",
       "cpus": "6",
       "machine_requirements": "(OpSysMajorVer =?= 7) && (Target.HasCHTCStaging == true)",
+      "priority_flag": "+AccountingGroup = \"Pathology_OConnor\"",
       "disk_space": "20GB"
     }
   }
