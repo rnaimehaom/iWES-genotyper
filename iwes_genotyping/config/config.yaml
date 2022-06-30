@@ -1,0 +1,21 @@
+accession: '102907'
+missing_alleles: '../ref/missing_ipd_alleles.csv'
+mapping_reference_fasta: '../ef/ipd-mhc-mamu-2022-02-02_fl.fasta'
+diag_ref_fasta: '../ref/26128_ipd-mhc-mamu-2021-07-09.miseq.RWv4.fasta'
+indvl_allele_fl_fa_dir: '../ref/2022-02-02_ipd_fl'
+indvl_allele_fa_dir: '../ref/2022-02-02_diag'
+filter_depth_chimeras:
+  edge_distance_threshold: 0
+  depth_threshold: 10
+  maximum_start_position_gap: 28
+  minimum_bridge_read_length: 70
+
+filter_depth_chimeras_fl:
+  edge_distance_threshold: 20
+  depth_threshold: 10
+  maximum_start_position_gap: 28
+  minimum_bridge_read_length: 70
+
+fastq:
+  fastq_folder: '/Volumes/Data-pathfs09/sequencing/Baylor/Baylor_31/fastq'
+  R1_fastq_extension: '_R1_001.fastq.gz'

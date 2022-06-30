@@ -1,0 +1,11 @@
+{
+  "iwes": {
+    "chtc": {
+      "docker_image": "dockerreg.chtc.wisc.edu/dhoconno/iwes:27329",
+      "ram": "24GB",
+      "cpus": "6",
+      "machine_requirements": "(OpSysMajorVer =?= 7) && (Target.HasCHTCStaging == true)",
+      "disk_space": "20GB"
+    }
+  }
+}

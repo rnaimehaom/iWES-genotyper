@@ -1,0 +1,73 @@
+{
+  "all": {
+    "local": {
+      "submit_paths": {
+        "home_dir": "/Volumes/working_ssd/27399/",
+        "pipeline_code_dir": "/Volumes/working_ssd/27399/27400/iwes_genotyping"
+      },
+      "in_paths": {
+        "home_dir": "/Volumes/Data-pathfs09/sequencing/Baylor/Baylor_31/fastq"
+      },
+      "out_paths": {
+        "home_dir": "/Volumes/working_ssd/27399/27400-results"
+      }
+    },
+    "chtc": {
+      "submit_paths": {
+        "un": "nrminor",
+        "server": "oconnorsubmit.chtc.wisc.edu",
+        "home_dir": "/home/nrminor/27399"
+      },
+      "in_paths": {
+        "un": "nrminor",
+        "server": "transfer.chtc.wisc.edu",
+        "home_dir": "/staging/groups/oconnor_group"
+      }
+    }
+  },
+  "tar_paired_fastq": {
+    "local": {
+      "mark_as_completed": "False",
+      "executable": "tar_paired_fastq.py",
+      "arguments": {
+        "--out_dir": "<tar_paired_fastq:local:module_out_dir>",
+        "--allele_haplotype_caller_path": "/Volumes/working_ssd/27399/27400/iwes_genotyping/static_files/ipd_disagnostic_wes_mamu_allele_haplotype.csv",
+        "--animal_lookup_path": "/Volumes/working_ssd/27399/27400/iwes_genotyping/static_files/animal_lookup_baylor31.csv"
+      }
+    }
+  },
+  "iwes": {
+    "local": {
+      "mark_as_completed": "False",
+      "start_trigger": "<tar_paired_fastq:completed>"
+    },
+    "chtc": {
+      "submit_job": "True",
+      "get_output": "True",
+      "executable": "launch_iwes_smk.sh",
+      "transfer_to_server": "<tar_paired_fastq:local:module_out_dir>",
+      "static_files": "/Volumes/working_ssd/27399/27400/iwes_genotyping/static_files/filter_depth_chimera.py,/Volumes/working_ssd/27399/27400/iwes_genotyping/static_files/config.yaml,/Volumes/working_ssd/27399/27400/iwes_genotyping/static_files/ref.tar.gz,/Volumes/working_ssd/27399/27400/iwes_genotyping/static_files/iwes_fl.smk,/Volumes/working_ssd/27399/27400/iwes_genotyping/static_files/iwes_fast.smk",
+      "arguments": {
+        "-s": "${s}",
+        "-c": "3",
+        "-z": "<tar_paired_fastq:local:mark_as_completed>"
+      }
+    }
+  },
+  "aggregate_haplotype": {
+    "local": {
+      "mark_as_completed": "False",
+      "executable": "aggregate_haplotype.sh",
+      "start_trigger": "<iwes:completed>",
+      "arguments": {
+        "--out_dir": "<aggregate_haplotype:local:module_out_dir>",
+        "--in_dir": "<iwes:local:module_out_dir>",
+        "--allele_haplotype_caller_path": "/Volumes/working_ssd/27399/27400/iwes_genotyping/static_files/ipd_disagnostic_wes_mamu_allele_haplotype.csv",
+        "--animal_lookup_path": "/Volumes/working_ssd/27399/27400/iwes_genotyping/static_files/animal_lookup_baylor31.csv",
+        "--submit_name": "<submit_name>",
+        "--gdrive_out_dir": "\"/Volumes/GoogleDrive/Shared drives/dholab/gs/iwes_genotyping\"",
+        "--cassowary_path": "/Volumes/Data-pathfs09/analyses/gs_iwes"
+      }
+    }
+  }
+}

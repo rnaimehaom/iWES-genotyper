@@ -1,0 +1,13 @@
+#Summary
+#Generated on	Fri Jun 24 13:09:19 CDT 2022
+#Version	5
+chroms	1
+bases	4772017
+defined	4073616
+undefined	698401
+contigs	2279
+scaffolds	2274
+interpad	300
+source	/Volumes/T7/MHC_genotyper/baylor_31_test/ref/ipd-mhc-mamu-2022-02-02_fl.fasta
+bytes	4119458
+last modified	1655919072380
