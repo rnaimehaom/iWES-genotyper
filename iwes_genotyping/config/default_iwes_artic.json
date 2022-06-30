@@ -14,14 +14,14 @@
     },
     "chtc": {
       "submit_paths": {
-        "un": "dabaker3",
+        "un": "nrminor",
         "server": "oconnorsubmit.chtc.wisc.edu",
-        "home_dir": "/home/dabaker3"
+        "home_dir": "/home/nrminor/27399"
       },
       "in_paths": {
-        "un": "dabaker3",
+        "un": "nrminor",
         "server": "transfer.chtc.wisc.edu",
-        "home_dir": "/staging/groups/oconnor_group"
+        "home_dir": "/staging/groups/oconnor_group/27399"
       }
     }
   },
@@ -44,7 +44,7 @@
       "get_output": "True",
       "executable": "launch_iwes_smk.sh",
       "transfer_to_server": "<tar_paired_fastq:local:module_out_dir>",
-      "static_files": "/Users/dabaker3/github/iwes_genotyping/static_files/filter_depth_chimera.py,/Users/dabaker3/github/iwes_genotyping/static_files/config.yaml,/Users/dabaker3/github/iwes_genotyping/static_files/ref.tar.gz,/Users/dabaker3/github/iwes_genotyping/static_files/iwes_fl.smk,/Users/dabaker3/github/iwes_genotyping/static_files/iwes_fast.smk",
+      "static_files": "/Volumes/working_ssd/27399/iwes_genotyping/static_files/filter_depth_chimera.py,/Volumes/working_ssd/27399/iwes_genotyping/static_files/config.yaml,/Volumes/working_ssd/27399/iwes_genotyping/static_files/ref.tar.gz,/Volumes/working_ssd/27399/iwes_genotyping/static_files/iwes_fl.smk,/Volumes/working_ssd/27399/iwes_genotyping/static_files/iwes_fast.smk",
       "arguments": {
         "-s": "${s}",
         "-c": "3",
@@ -60,8 +60,8 @@
       "arguments": {
         "--out_dir": "<aggregate_haplotype:local:module_out_dir>",
         "--in_dir": "<iwes:local:module_out_dir>",
-        "--allele_haplotype_caller_path": "/Users/dabaker3/github/iwes_genotyping/static_files/ipd_disagnostic_wes_mamu_allele_haplotype.csv",
-        "--animal_lookup_path": "/Users/dabaker3/github/iwes_genotyping/static_files/animal_lookup_baylor31.csv",
+        "--allele_haplotype_caller_path": "/Volumes/working_ssd/27399/iwes_genotyping/static_files/ipd_disagnostic_wes_mamu_allele_haplotype.csv",
+        "--animal_lookup_path": "/Volumes/working_ssd/27399/iwes_genotyping/static_files/animal_lookup_baylor31.csv",
         "--submit_name": "<submit_name>",
         "--gdrive_out_dir": "\"/Volumes/GoogleDrive/Shared drives/dholab/gs/iwes_genotyping\"",
         "--cassowary_path": "/Volumes/Data-pathfs09/analyses/gs_iwes"
