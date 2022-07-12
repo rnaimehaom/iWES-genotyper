@@ -3,7 +3,7 @@
     "local": {
       "submit_paths": {
         "home_dir": "/Volumes/working_ssd/27399",
-        "pipeline_code_dir": "/Volumes/working_ssd/27399/iwes_genotyping"
+        "pipeline_code_dir": "/Volumes/working_ssd/27399/iwes_genotyping/chtc_serpent_v2/"
       },
       "in_paths": {
         "home_dir": "/Volumes/Data-pathfs09/sequencing/Baylor/Baylor_31/fastq"
