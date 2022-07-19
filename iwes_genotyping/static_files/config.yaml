@@ -1,4 +1,4 @@
-# accession: '102907'
+accession: '102907'
 missing_alleles: 'ref/missing_ipd_alleles.csv'
 mapping_reference_fasta: 'ref/ipd-mhc-mamu-2022-02-02_fl.fasta'
 diag_ref_fasta: 'ref/26128_ipd-mhc-mamu-2021-07-09.miseq.RWv4.fasta'
@@ -7,13 +7,13 @@ indvl_allele_fa_dir: 'ref/2022-02-02_diag'
 filter_depth_chimeras:
   edge_distance_threshold: 0
   depth_threshold: 10
-  maximum_start_position_gap: 30
+  maximum_start_position_gap: 45
   minimum_bridge_read_legth: 70
 
 filter_depth_chimeras_fl:
   edge_distance_threshold: 20
   depth_threshold: 10
-  maximum_start_position_gap: 30
+  maximum_start_position_gap: 45
   minimum_bridge_read_legth: 70
 
 fastq:

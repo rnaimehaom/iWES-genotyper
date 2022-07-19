@@ -76,7 +76,9 @@ if not os.path.exists("results/01-bait-mhc/" + accession + ".fastq.gz"):
         input:
             mapping_reference_fasta
         output:
-            "results/01-bait-mhc/" + accession + ".fastq.gz"
+            "results/01-bait-mhc/" + accession + ".fastq.gz",
+            "results/01-bait-mhc/" + accession + ".read_count.txt"
+            "results/01-bait-mhc/" + accession + ".bbmap_stats.txt"
         params:
             accession=accession,
             extra="--skip-technical",
@@ -88,10 +90,13 @@ if not os.path.exists("results/01-bait-mhc/" + accession + ".fastq.gz"):
                 # if fastq_source is SRA
                 shell("fasterq-dump {params.accession} \
                 --threads {threads} --split-spot --stdout -p  \
-                | bbmap.sh -Xmx12g in=stdin.fq int=t outm={output[0]} ref={input[0]} semiperfectmode=t threads={threads}")
+                | bbmap.sh -Xmx12g in=stdin.fq int=t outm={output[0]} ref={input[0]} semiperfectmode=t threads={threads} statsfile=output[2]")
             if fastq_source == "local":
                 # if fastq_source is local
-                shell("bbmap.sh -Xmx12g in={params.r1_fastq} in2={params.r2_fastq} outm={output[0]} ref={input[0]} semiperfectmode=t threads={threads}")
+                shell("bbmap.sh -Xmx12g in={params.r1_fastq} in2={params.r2_fastq} outm={output[0]} ref={input[0]} semiperfectmode=t threads={threads} statsfile=output[2]")
+            shell("zcat {output[0]} | echo $((`wc -l`/4)) > {output[1]}")
+            shell("touch {output[1]}")
+
 # java -ea -Xmx4500m -Xms4500m -cp /opt/conda/opt/bbmap-38.90-3/current/ align2.BBMap build=1 overwrite=true \
 #     fastareadlen=500 \
 #                  in=results/01-bait-mhc/102923.fastq.gz int=t \
@@ -110,9 +115,10 @@ rule exhaustive_mapping:
         indvl_allele_fa_dir + "/{allele}.fasta"
     output:
         temp("results/02-exhaustive-map/{allele}.sam"),
+        "results/01-bait-mhc/" + accession + "{allele}_bbmap_stats.txt"
     threads: 1
     run:
-        shell("bbmap.sh -Xmx4g in={input[0]} int=t outm={output[0]} ref={input[1]} semiperfectmode=t threads=1 nodisk=t")
+        shell("bbmap.sh -Xmx4g in={input[0]} int=t outm={output[0]} ref={input[1]} semiperfectmode=t threads=1 nodisk=t statsfile=output[1]")
         # shell("bbmap.sh in={input[0]} int=t outm={output[0]} ref={input[1]} semiperfectmode=t threads=1 nodisk=t >/dev/null 2>&1")
 rule sort_sam:
     """
@@ -158,9 +164,9 @@ rule convert_bam:
 rule merge_bam:
     """
     merge sorted SAM files into single SAM file
-    Some nodes/systems have file limits set.  
+    Some nodes/systems have file limits set.
     By looping over 200 files at a time we should not meet that file open limit.
-    The default file limit to be around 1024, but there is a lot opened in the background 
+    The default file limit to be around 1024, but there is a lot opened in the background
         (and possibly on the shared underlying node) that can cause this to be reached as low as 500 files.
     """
     input:
@@ -225,18 +231,18 @@ rule filter_depth_chimeras:
     2.) next step filters out chimeras:
     2a.)It ensures there is at least one mapping read a set gap (default 30 positions) apart across the allele
     3.) Next a list of passing alleles is created as a single column csv file
-    4.) Next a bam files with mapped reads to the the "passing" alleles 
+    4.) Next a bam files with mapped reads to the the "passing" alleles
     """
     input:
         "results/06-depth/" + accession + ".depth.txt.gz",
         "results/05-merged/" + accession + ".merged.bam",
     output:
-        "results/06-depth/" + accession + ".allele_list.csv",
+        "results/06-depth/" + accession + ".allele_list.tsv",
         "results/05-merged/" + accession + ".filtered.merged.bam",
     params:
         edge_distance_threshold=0,
         depth_threshold=10,
-        maximum_start_position_gap=30,
+        maximum_start_position_gap=45,
         minimum_bridge_read_length=70
     threads: 1
     run:
@@ -257,7 +263,7 @@ rule create_allele_list_fl:
     suppress output stderr and stdout because it consumes a lot of unnecessary space
     """
     input:
-        "results/06-depth/" + accession + ".allele_list.csv",
+        "results/06-depth/" + accession + ".allele_list.tsv",
         missing_alleles
     output:
         'results/07-allele-list/' + accession + '.allele_list_fl.txt',
@@ -273,7 +279,7 @@ rule create_allele_list_fl:
         # ipd_num_dict
         included =False
         # open the list of alleles that past the depth/computational chimera filter
-        df = pd.read_csv(input[0], sep='\t', header=None, names=['allele'])
+        df = pd.read_csv(input[0], sep='\t')
         # get a list of the unique alleles
         diag_present_list = list(df['allele'].unique())
         # print(diag_present_list)

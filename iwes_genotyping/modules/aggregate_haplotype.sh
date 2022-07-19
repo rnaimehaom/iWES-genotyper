@@ -36,14 +36,16 @@ echo "${LATEST_DIR}"
 
 # PANGOLIN_REPORT_DIR=${LATEST_DIR}/pangolin_reports
 mkdir -p ${LATEST_DIR}
+cd ${in_dir}
 find ${LATEST_DIR} -maxdepth 2 -type f -name "*.tar.gz" > genotypes_list.txt
 cd ${LATEST_DIR}
 for tar_file in `cat ../genotypes_list.txt`; do
   echo ${tar_file}
   tar -xzvf ${tar_file} '*.genotypes.csv'
+  tar -xzvf ${tar_file} '*.read_count.txt'
 done
 find ./ -name '*.genotypes.csv' -exec mv '{}' ./ \;
-
+find ./ -name '*.read_count.txt' -exec mv '{}' ./ \;
 script_directory=$(dirname "$0")
 echo ${script_directory}
 echo "python3 ${script_directory}/aggregate_haplotype.py --submit_name=${submit_name} \

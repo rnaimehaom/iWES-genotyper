@@ -95,6 +95,14 @@ df_summary = df[['allele', 'DEPTH_THRESHOLD']].groupby(['allele'])['DEPTH_THRESH
 df_summary_pass = df_summary[df_summary['DEPTH_THRESHOLD'] > 0]
 # Find a unique list of alleles, as the allele name is repeated for each positions
 allele_list = list(df_summary_pass['allele'].unique())
+# df_summary_median = df[['allele', 'depth']].groupby(['allele'])['depth'].median().reset_index()
+# allele_median_depth_list = []
+# for allele_i in allele_list:
+#   df_summary_median_i = df_summary_median[df_summary_median['allele'] == allele_i]
+#   median_depth_list_i = list(df_summary_median_i['allele'])
+#   median_depth_i = median_depth_list_i[0]
+#   allele_median_depth_list.append(median_depth_i)
+
 #############################################
 # Start the Computational Chimera Filtering #
 #############################################
@@ -152,7 +160,12 @@ for key, value in ref_dict.items():
         passing_alleles.append(key)
 # Create a csv of the passing alleles.
 df_passing = pd.DataFrame({'allele': passing_alleles})
-df_passing.to_csv(filtered_allele_list_outpath, header=False, index=False)
+
+
+df_summary_median = df[['allele', 'depth']].groupby(['allele'])['depth'].median().reset_index()
+df_passing = df_passing.merge(df_summary_median, on=['allele'], how='inner')
+df_passing.to_csv(filtered_allele_list_outpath,  index=False, sep='\t')
+# df_depth.to_csv(filtered_allele_list_outpath, header=False, index=False)
 # make a bam file of the passing allele
 infile = pysam.AlignmentFile(merged_bam_path, "rb")
 bam_header = infile.header.copy().to_dict()

@@ -3,25 +3,25 @@
     "local": {
       "submit_paths": {
         "home_dir": "/Volumes/working_ssd/27399",
-        "pipeline_code_dir": "/Volumes/working_ssd/27399/iwes_genotyping/chtc_serpent_v2/"
+        "pipeline_code_dir": "/Volumes/working_ssd/27399/iwes_genotyping"
       },
       "in_paths": {
-        "home_dir": "/Volumes/Data-pathfs09/sequencing/Baylor/Baylor_31/fastq"
+        "home_dir": "/Volumes/working_ssd/27399"
       },
       "out_paths": {
-        "home_dir": "/Volumes/working_ssd/27399/results"
+        "home_dir": "/Volumes/working_ssd/27399"
       }
     },
     "chtc": {
       "submit_paths": {
         "un": "nrminor",
         "server": "oconnorsubmit.chtc.wisc.edu",
-        "home_dir": "/home/nrminor/27399"
+        "home_dir": "/home/nrminor"
       },
       "in_paths": {
         "un": "nrminor",
         "server": "transfer.chtc.wisc.edu",
-        "home_dir": "/staging/groups/oconnor_group/27399"
+        "home_dir": "/staging/groups/oconnor_group"
       }
     }
   },
@@ -47,7 +47,7 @@
       "static_files": "/Volumes/working_ssd/27399/iwes_genotyping/static_files/filter_depth_chimera.py,/Volumes/working_ssd/27399/iwes_genotyping/static_files/config.yaml,/Volumes/working_ssd/27399/iwes_genotyping/static_files/ref.tar.gz,/Volumes/working_ssd/27399/iwes_genotyping/static_files/iwes_fl.smk,/Volumes/working_ssd/27399/iwes_genotyping/static_files/iwes_fast.smk",
       "arguments": {
         "-s": "${s}",
-        "-c": "3",
+        "-c": "6",
         "-z": "<tar_paired_fastq:local:mark_as_completed>"
       }
     }

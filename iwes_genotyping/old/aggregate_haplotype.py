@@ -86,73 +86,28 @@ df_counts.rename(columns={'allele_diagnostic': 'diag_count'}, inplace=True)
 df_ref_lookup = df_ref_lookup.merge(df_counts, on=['HAPLOTYPE_CALL', 'TYPE'])
 
 
-filepath_list = os.listdir(in_dir)
-genotyping_pathlist = [os.path.join(in_dir, x) for x in filepath_list if
+genotyping_pathlist = os.listdir(in_dir)
+genotyping_pathlist = [os.path.join(in_dir, x) for x in genotyping_pathlist if
                        (not x.startswith('._') and x.endswith('.genotypes.csv'))]
-readcount_pathlist = [os.path.join(in_dir, x) for x in filepath_list if
-                       (not x.startswith('._') and x.endswith('.read_count.txt'))]
-# need to untar the files first for the files
+
+# need to untar the files first fo the genotyps
 #
 df = pd.DataFrame()
 for path_i in genotyping_pathlist:
     df_i = pd.read_csv(path_i)
     df = pd.concat([df, df_i], ignore_index=True)
-
-df_read_ct = pd.DataFrame()
-for path_i in readcount_pathlist:
-    df_read_ct_i = pd.read_csv(path_i, header=None, sep='\t', names=['sample_read_ct'])
-    name_i = os.path.basename(path_i)
-    gs_id_i = name_i.split('.')[0]
-    df_read_ct_i['gs_id'] = gs_id_i
-    df_read_ct = pd.concat([df_read_ct, df_read_ct_i], ignore_index=True)
-
-df_read_ct_pivot = df_read_ct.pivot_table(values='sample_read_ct',
-                                          columns=['gs_id'],
-                                          aggfunc=np.max,
-                                          fill_value=0).reset_index()
-df_read_ct_pivot.rename_axis(['index2'], inplace=True, axis=1)
-df_read_ct_pivot.rename(columns={'index': 'gs_id'}, inplace=True)
-df_read_ct_pivot.rename_axis(['index'], inplace=True, axis=1)
-
-
 df.rename(columns={'accession': 'gs_id'}, inplace=True)
-
-
-if os.path.exists(animal_lookup_path):
-    animal_lookup = pd.read_csv(animal_lookup_path)
-    print(animal_lookup)
-    animal_lookup = animal_lookup[['gs_id']]
-    animal_lookup_dict = {}
-    animal_lookup['gs_id'] = animal_lookup['gs_id'].astype(str)
-    df['gs_id'] = df['gs_id'].astype(str)
-    df = df.merge(animal_lookup[['gs_id']], how='inner', on=['gs_id'])
-    df_read_ct['gs_id'] = df_read_ct['gs_id'].astype(str)
-    df_read_ct = df_read_ct.merge(animal_lookup[['gs_id']], how='inner', on=['gs_id'])
-
 df['allele_idp'] = ['-'.join(x.split('-')[1:]) for x in df['allele']]
-df['MHC_TYPE'] = [x.split('_')[1] if int((y * 100) % 100) in [49, 99] else x.split('_')[0] for x, y in zip(df['allele'], df['read_ct'])]
-# print(df)
-type_dict = {'Mamu-A1': 'MHC_A_HAPLOTYPES',
-             'Mamu-A2': 'MHC_A_HAPLOTYPES',
-             'Mamu-B': 'MHC_B_HAPLOTYPES',
-             'Mamu-DRB': 'MHC_DRB_HAPLOTYPES',
-             'Mamu-DRB1': 'MHC_DRB_HAPLOTYPES',
-             'Mamu-DRB3': 'MHC_DRB_HAPLOTYPES',
-             'Mamu-DRB4': 'MHC_DRB_HAPLOTYPES',
-             'Mamu-DQA1': 'MHC_DQA_HAPLOTYPES',
-             'Mamu-DQB1': 'MHC_DQB_HAPLOTYPES',
-             'Mamu-DPA1': 'MHC_DPA_HAPLOTYPES',
-             'Mamu-DPB1': 'MHC_DPB_HAPLOTYPES'
-             }
+df['MHC_TYPE'] = [x.split('_')[0] if y == 1 else x.split('_')[1] for x, y in zip(df['allele'], df['read_ct'])]
+type_dict = {'Mamu-A1': 'MHC_A_HAPLOTYPES', 'Mamu-A2': 'MHC_A_HAPLOTYPES', 'Mamu-B': 'MHC_B_HAPLOTYPES'}
 #  'Mamu-A3':'MHC_A_HAPLOTYPES', #'Mamu-A4', 'Mamu-A6', 'Mamu-AG1',
 # 'Mamu-AG2', 'Mamu-AG3', 'Mamu-AG4', 'Mamu-AG5', 'Mamu-AG6',
 # 'Mamu-B02Ps', 'Mamu-B10Ps', 'Mamu-B11L', 'Mamu-B14Ps', 'Mamu-B17',
 # 'Mamu-B21Ps',
 # 'Mamu-E', 'Mamu-G', 'Mamu-I', 'Mamu-J'}
-print(list(df['MHC_TYPE'].unique()))
-df['TYPE'] = [type_dict[x] if x in type_dict.keys() else x for x in df['MHC_TYPE']]
 
-df_diag = df[df['read_ct'].mul(100).mod(100).astype(int).isin([49, 99])]
+df['TYPE'] = [type_dict[x] if x in type_dict.keys() else x for x in df['MHC_TYPE']]
+df_diag = df[df['read_ct'] == .99]
 df_ref_diag = df_ref_lookup[['HAPLOTYPE_CALL', 'allele_diagnostic', 'diag_count', 'TYPE']].drop_duplicates()
 allele_idp_list = []
 allele_diag_long_list = []
@@ -170,16 +125,10 @@ df_diag['allele_diagnostic'] = allele_diag_long_list
 df_diag_f = df_diag[df_diag['match'] > 0]
 df_diag_f = df_diag_f.merge(df_ref_diag, on=['TYPE', 'allele_diagnostic'])
 df_diag_f.drop(columns=['match'], inplace=True)
-# print('diag_type')
-# print(list(df_diag_f['TYPE'].unique()))
-# print(df_diag_f)
-# print('df_type')
-# print(list(df['TYPE'].unique()))
-print('ref_type')
-print(list(df_ref_lookup['TYPE'].unique()))
+
 df_merge = df.merge(df_ref_lookup[['TYPE', 'allele_idp', 'HAPLOTYPE_CALL', 'allele_diagnostic', 'diag_count']],
                     on=['TYPE', 'allele_idp'], how='inner')
-# print(df_diag_f)
+print(df_diag_f)
 
 df_merge = pd.concat([df_merge, df_diag_f], ignore_index=True)
 
@@ -221,13 +170,6 @@ print(df_haplo_pivot)
 if xlsx_filepath is None:
     xlsx_filepath = os.path.join(out_dir, '{0}.pivot.xlsx'.format(submit_name))
 df['# Obs'] = df.groupby('allele_idp')['read_ct'].transform('count')
-# change to get normalized values
-# max_value = df_read_ct['sample_read_ct'].max()
-# df = df.merge(df_read_ct, on='gs_id', how='left')
-# df['norm_read_ct'] = df['read_ct'] / df['sample_read_ct'] * max_value
-# df['norm_read_ct'] = df['norm_read_ct'].round()
-# df['read_ct'] = [x - 0.01 if int((y * 100) % 100) in [49, 99] else x for x, y in zip(df['norm_read_ct'], df['read_ct'])]
-
 genotype_pivot = df.pivot_table(values='read_ct',
                                 index=['allele_idp', '# Obs'],
                                 columns=['gs_id'],
@@ -249,15 +191,12 @@ df_count_summary_pivot.rename_axis(['index'], inplace=True, axis=1)
 
 
 df_gs_id = pd.DataFrame([list(df_haplo_pivot.columns)], columns=list(df_haplo_pivot.columns))
-
-df_xlx_pivot = pd.concat([df_gs_id, df_count_summary_pivot, df_haplo_pivot, df_read_ct_pivot, genotype_pivot],
-                         ignore_index=True)
+df_xlx_pivot = pd.concat([df_gs_id, df_count_summary_pivot, df_haplo_pivot, genotype_pivot], ignore_index=True)
 
 df_xlx_pivot.rename(columns={'gs_id': 'Animal IDs'}, inplace=True)
 if os.path.exists(animal_lookup_path):
     animal_lookup = pd.read_csv(animal_lookup_path)
     animal_lookup_dict = {}
-    animal_lookup['gs_id'] = animal_lookup['gs_id'].astype(str)
     for idx, row in animal_lookup.iterrows():
         animal_lookup_dict[row['gs_id']] = row['animal_id']
     gs_id_list = list(df_xlx_pivot.columns)
@@ -267,7 +206,7 @@ if os.path.exists(animal_lookup_path):
 
     for gs_id_i in gs_id_list:
         if gs_id_i in animal_lookup_dict.keys():
-            animal_list2.append(animal_lookup_dict[gs_id_i])
+            animal_list2.append(animal_lookup_dict[int(gs_id_i)])
     animal_list2.sort()
     col_order = ['Animal IDs', '# Obs'] + animal_list2
 else:

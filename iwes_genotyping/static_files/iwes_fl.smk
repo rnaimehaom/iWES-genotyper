@@ -204,13 +204,13 @@ rule filter_depth_chimeras_fl:
         "results/11-depth-fl/" + accession + ".depth.txt.gz",
         "results/10-merged-fl/" + accession + ".merged.bam"
     output:
-        "results/12-chimera-fl/" + accession + ".allele_list.csv",
+        "results/12-chimera-fl/" + accession + ".allele_list.tsv",
         "results/12-chimera-fl/" + accession + ".filtered.merged.bam",
         "results/12-chimera-fl/" + accession + '.finished.txt'
     params:
         edge_distance_threshold=20,
         depth_threshold=10,
-        maximum_start_position_gap=28,
+        maximum_start_position_gap=45,
         minimum_bridge_read_length=70
     threads: 1
     run:
@@ -229,8 +229,8 @@ rule genotype:
     identify SAM mappings where there is complete read support at least specified depth
     """
     input:
-        "results/12-chimera-fl/" + accession + ".allele_list.csv",
-        "results/06-depth/" + accession + ".allele_list.csv"
+        "results/12-chimera-fl/" + accession + ".allele_list.tsv",
+        "results/06-depth/" + accession + ".allele_list.tsv"
 
     output:
         "results/13-genotypes-fl/" + accession + ".genotypes.csv",
@@ -238,8 +238,8 @@ rule genotype:
     threads: 1
     run:
         import pandas as pd
-        df = pd.read_csv(input[0], header=None, names=['allele'])
-        df_diag =pd.read_csv(input[1], header=None, names=['allele'])
+        df = pd.read_csv(input[0], sep='\t')
+        df_diag =pd.read_csv(input[1], sep='\t')
         print(df_diag)
         diag_allele_list = list(df_diag['allele'].unique())
         ipd_allele_list = list(df['allele'].unique())
@@ -249,11 +249,15 @@ rule genotype:
             at_least_one_allele = any(item in should_present_allele_list for item in ipd_allele_list)
             if not at_least_one_allele:
                 missing_diag_list.append(diag_i)
-        df['read_ct'] = 1
+        df.rename(columns={'depth':'read_ct'}, inplace=True)
+        df['read_ct'] = df['read_ct'].round(decimals=0)
         df['accession'] = accession
         if len(missing_diag_list) > 0 :
             df_diag_missing = pd.DataFrame({'allele':missing_diag_list})
-            df_diag_missing['read_ct'] = 0.99
+            df_diag_missing = df_diag.merge(df_diag_missing, on=['allele'], how='inner')
+            df_diag_missing.rename(columns={'depth':'read_ct'}, inplace=True)
+            df_diag_missing['read_ct'] = df_diag_missing['read_ct'].round(decimals=0)
+            df_diag_missing['read_ct'] = df_diag_missing['read_ct'] - .01
             df_diag_missing['accession'] = accession
             df = pd.concat([df, df_diag_missing], ignore_index=True)
         df.to_csv(output[0],index=False)

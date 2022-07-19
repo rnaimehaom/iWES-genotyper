@@ -1,0 +1,24 @@
+{
+  "all": {
+    "local": {
+      "default_config_dir": "/Volumes/working_ssd/27399/iwes_genotyping/config",
+      "out_paths": {
+        "home_dir": "/Volumes/working_ssd/27399"
+      }
+    }
+  },
+  "tar_paired_fastq": {
+    "local": {
+      "arguments": {
+        "--in_dir": "/Volumes/Data-pathfs09/sequencing/Baylor/Baylor_31/fastq"
+      }
+    }
+  },
+  "aggregate_haplotype": {
+    "local": {
+      "arguments": {
+        "--animal_lookup_path": "/Volumes/working_ssd/27399/iwes_genotyping/static_files/animal_lookup_baylor31.csv"
+      }
+    }
+  }
+}

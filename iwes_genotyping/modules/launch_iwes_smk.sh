@@ -23,12 +23,13 @@ else
 fi
 ls results/01-bait-mhc/${accession}.fastq.gz
 tar -zxf ref.tar.gz
-
+rm ./._*
 snakemake --snakefile ./iwes_fast.smk \
 --cores ${cores} \
 --configfile ./config.yaml \
 --config accession=${accession}
-
+rm -f ./*_R1_001.fastq.gz
+rm -f ./*_R2_001.fastq.gz
 snakemake --snakefile ./iwes_fl.smk \
 --cores ${cores} \
 --configfile ./config.yaml \
@@ -52,5 +53,9 @@ mv ./results/10-merged-fl/${accession}.merged.bam ./
 # This is a core file
 mv ./results/12-chimera-fl/${accession}.filtered.merged.bam ./
 mv ./results/13-genotypes-fl/${accession}.genotypes.csv ./
+mv ./results/05-merged/${accession}.merged.bam ./diag.${accession}.merged.bam
+mv ./results/06-depth/${accession}.depth.txt.gz ./diag.${accession}.depth.txt.gz
+mv ./results/11-depth-fl/${accession}.depth.txt.gz ./${accession}.depth.txt.gz
+mv ./results/01-bait-mhc/${accession}.read_count.txt ./${accession}.read_count.txt
 # zip the rest of the results files so the automated program will return the back up results.
 tar -zcvf ${accession}.results.tar.gz results

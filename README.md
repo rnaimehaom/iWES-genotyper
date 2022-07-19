@@ -24,7 +24,7 @@ That said, here's how to genotype iWES FASTQs using this repo:
 3. Run the following command:
 	```
 	python3 chtc_serpent_v2/main.py \
-		--config_dir iwes_genotyping/config \
-		--submission_dir ~/chtc_serpent/chtc_serpent_submissions
+		--config_dir ./ \
+		--submission_dir ./chtc_serpent_submissions
 	```
 
